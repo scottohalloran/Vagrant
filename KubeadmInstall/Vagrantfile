@@ -1,0 +1,71 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian12base"
+
+
+  
+
+  # Provider defaults
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 2048
+    vb.cpus = 1
+  end
+
+  # Define hosts and IPs
+  hosts = {
+    "kubemaster"  => "192.168.56.11",
+    "kubenode01"  => "192.168.56.12",
+    "kubenode02"  => "192.168.56.13"
+  }
+
+  # Common provisioning
+  config.vm.provision "shell", inline: <<-SHELL
+    # Ensure vagrant user exists
+    if ! id vagrant >/dev/null 2>&1; then
+      useradd -m -s /bin/bash vagrant
+    fi
+
+    usermod -aG sudo vagrant
+
+   
+
+
+    PubkeyAuthentication yes   
+    # Deploy Vagrant insecure public key for seamless inter-node SSH
+    #mkdir -p /home/vagrant/.ssh
+    #curl -L https://raw.githubusercontent.com/hashicorp/vagrant/master/keys/vagrant.pub -o /home/vagrant/.ssh/authorized_keys
+    #chown -R vagrant:vagrant /home/vagrant/.ssh
+    #chmod 600 /home/vagrant/.ssh/authorized_keys
+
+    #systemctl restart ssh
+
+    # Build /etc/hosts entries
+    cat <<EOF >> /etc/hosts
+192.168.56.11 kubemaster.local kubemaster
+192.168.56.12 kubenode01.local kubenode01
+192.168.56.13 kubenode02.local kubenode02
+EOF
+  SHELL
+
+ 
+
+  # kubemaster
+  config.vm.define "kubemaster" do |vm|
+    vm.vm.hostname = "kubemaster.local"
+    vm.vm.network "private_network", ip: hosts["kubemaster"]
+    vm.disksize.size = "20GB"
+  end
+
+  # Node 0
+  config.vm.define "kubenode01" do |vm|
+    vm.vm.hostname = "kubenode01.local"
+    vm.vm.network "private_network", ip: hosts["kubenode01"]
+    vm.disksize.size = "20GB"
+  end
+
+  # Node 1
+  config.vm.define "kubenode02" do |vm|
+    vm.vm.hostname = "kubenode02.local"
+    vm.vm.network "private_network", ip: hosts["kubenode02"]
+    vm.disksize.size = "20GB"
+  end
+end

@@ -6,7 +6,7 @@ Vagrant.configure("2") do |config|
   # Provider defaults
   config.vm.provider "virtualbox" do |vb|
     vb.memory = 2048
-    vb.cpus = 1
+  
   end
 
   # Define hosts and IPs

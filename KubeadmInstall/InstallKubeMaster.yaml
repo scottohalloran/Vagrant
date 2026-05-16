@@ -30,7 +30,7 @@ ps -p 1
 
 sudo mkdir /etc/containerd
 #Install crictl
-VERSION="v1.36.0"
+VERSION="v1.34.0"
 wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz
 sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
 rm -f crictl-$VERSION-linux-amd64.tar.gz
@@ -44,5 +44,5 @@ cat /etc/containerd/config.toml | grep -i SystemdCgroup -B 30
 sudo systemctl restart containerd
 
 #Initialize ControlPlane node
-sudo kubeadm init --apiserver-advertise-address 192.168.56.13 --pod-network-cidr "10.244.0.0/16" --upload-certs
+sudo kubeadm init --apiserver-advertise-address 192.168.56.11 --pod-network-cidr "10.244.0.0/16" --upload-certs
 
